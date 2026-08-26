@@ -1,236 +1,247 @@
-liboqs
+liboqs-80211
 ======================
 
-[![Main Branch Tests](https://github.com/open-quantum-safe/liboqs/actions/workflows/commit-to-main.yml/badge.svg)](https://github.com/open-quantum-safe/liboqs/actions/workflows/commit-to-main.yml)
-[![Weekly Tests](https://github.com/open-quantum-safe/liboqs/actions/workflows/weekly.yml/badge.svg)](https://github.com/open-quantum-safe/liboqs/actions/workflows/weekly.yml)
-[![Coverage Status](https://coveralls.io/repos/github/open-quantum-safe/liboqs/badge.svg?branch=main)](https://coveralls.io/github/open-quantum-safe/liboqs?branch=main)
+liboqs-80211은 80211-pqc 프로젝트에서 사용하는 암호 라이브러리로, OpenQuantum Safe의 [liboqs](https://github.com/open-quantum-safe/liboqs)를 기반으로 합니다.
 
-liboqs is an open source C library for quantum-safe cryptographic algorithms.
+새로운 PQC 및 암호 알고리즘을 추가하고 무선·임베디드 환경에 적합하도록 연산을 최적화합니다.
+  
+## 프로젝트 소개
+liboqs-80211은 80211-PQC 프로젝트에서 사용하는 암호 연산들을 다룹니다.
+기존 liboqs의 구조와 API를 가능한 한 유지하면서, 무선 공유기와 임베디드 장비에서 PQC 알고리즘을 사용할 수 있도록 새로운 알고리즘 추가와 구현 최적화를 수행합니다.
+- KEM, 전자서명 등 PQC 알고리즘을 제공
+- 새로운 PQC 및 암호 알고리즘 추가
+- ARM, NEON 등 특정 아키텍쳐에 맞는 연산 최적화
+- 메모리 사용량과 연산량을 줄이기 위한 최적화
 
-- [liboqs](#liboqs)
-	- [Overview](#overview)
-	- [Status](#status)
-		- [Supported Algorithms](#supported-algorithms)
-			- [Key encapsulation mechanisms](#key-encapsulation-mechanisms)
-			- [Signature schemes](#signature-schemes)
-			- [Stateful signature schemes](#stateful-signature-schemes)
-		- [Limitations and Security](#limitations-and-security)
-			- [Platform limitations](#platform-limitations)
-			- [Support limitations](#support-limitations)
-	- [Quickstart](#quickstart)
-		- [Linux and Mac](#linux-and-mac)
-		- [Windows](#windows)
-		- [Cross compilation](#cross-compilation)
-	- [Documentation](#documentation)
-	- [Contributing](#contributing)
-	- [License](#license)
-	- [Acknowledgements](#acknowledgements)
+## 프로젝트 구성
 
-## Overview
+80211-PQC 프로젝트는 다음 4개 레포로 구성됩니다.
 
-liboqs provides:
+| 레포 | 역할 |
+|------|------|
+| 프로토콜 명세서 | 제안 및 표준 기반 상세 구현 명세 |
+| [hostap-pqc](https://github.com/80211-PQC/hostap-pqc) | 프로토콜 실 구현체 |
+| [openwrt-pqc](https://github.com/80211-PQC/openwrt-pqc) | 구현된 프로토콜을 적용한 펌웨어 |
+| **liboqs-80211** *(현재 레포)* | 802.11 환경에 맞게 최적화된 liboqs 연산 구현체 |
 
-- a collection of open source implementations of quantum-safe key encapsulation mechanisms (KEMs) and digital signature algorithms; the full list can be found [below](#supported-algorithms)
-- a common API for these algorithms
-- a test harness and benchmarking routines
+## 상태
+> ⚠️ **실험 / 연구용 (Experimental)**
+> 본 프로젝트는 양자내성암호 구현 및 최적화를 목적으로 합니다.
+> 일부 알고리즘과 최적화 구현은 충분한 보안 검증이 완료되지 않았을 수 있으므로 실제 제품 환경에서는 사용하지 마십시오.
+> API, 지원 알고리즘 및 구현 구조는 개발 과정에서 변경될 수 있습니다.
 
-liboqs is part of the **Open Quantum Safe (OQS)** project, which aims to develop and integrate into applications quantum-safe cryptography to facilitate deployment and testing in real world contexts. In particular, OQS provides prototype integrations of liboqs into protocols like TLS, X.509, and S/MIME, through our [OpenSSL 3 Provider](https://github.com/open-quantum-safe/oqs-provider) and we provide a variety of other [post-quantum-enabled demos](https://github.com/open-quantum-safe/oqs-demos).
+## 주요 개발 범위
+#### PQC 알고리즘 추가
+기존 liboqs에서 제공하는 알고리즘 외에도 새로운 PQC 또는 암호 알고리즘 추가할 수 있습니다.
+주요 대상은 다음과 같습니다.
+- PQC 알고리즘
+- 무선 프로토콜을 위한 암호
+새로운 알고리즘을 추가할 경우 가능한 기존 libqos의 API 및 디렉터리 구조를 유지합니다.
 
-The OQS project is supported by the [Post-Quantum Cryptography Alliance](https://pqca.org/) as part of the [Linux Foundation](https://linuxfoundation.org/). More information about the Open Quantum Safe project can be found at [openquantumsafe.org](https://openquantumsafe.org/).
+#### 암호 연산 최적화
+무선 공유기와 임베디드 장치는 일반적인 PC나 서버보다 CPU와 메모리 자원이 제한적이므로, 본 프로젝트에서는 다음과 같은 최적화를 주로 개발 대상으로 합니다.
+- 모듈로 연산 최적화
+- 특정 아키텍쳐 대상 최적화
+- 메모리 사용량 감소
+- etc..
+최적화 구현은 기존 참조 구현과 동일한 암호학적 결과를 생성해야 합니다.
 
-OQS is running a survey to better understand our community. We would like to hear from organizations and individuals about their interest in and use of the Open Quantum Safe project. Please take a few minutes to fill out the survey: https://linuxfoundation.surveymonkey.com/r/oqssurvey
-
-## Status
-
-### Supported Algorithms
-
-Details on each supported algorithm can be found in the [docs/algorithms](https://github.com/open-quantum-safe/liboqs/tree/main/docs/algorithms) folder.
-
-The list below indicates all algorithms currently supported by liboqs, including experimental algorithms and already excluding algorithm variants pruned during the NIST competition, such as Kyber-90s or Dilithium-AES.
-
-The only algorithms in `liboqs` that implement NIST standards are the [`ML-KEM`](https://csrc.nist.gov/pubs/fips/203/final) (final standard) and [`ML-DSA`](https://csrc.nist.gov/pubs/fips/204/final) (final standard) variants with their respective different bit strengths. `liboqs` will retain these algorithm names selected by NIST throughout the finishing stages of the standardization process, so users can rely on their presence going forward. If NIST changes the implementation details of these algorithms, `liboqs` will adjust the implementation so that users are protected from such potential changes.
-
-Falcon has also been [selected for standardization](https://csrc.nist.gov/Projects/post-quantum-cryptography/selected-algorithms-2022), but the `liboqs` implementations of these algorithms are currently tracking Round 3 submissions and not NIST standards drafts.
-
-All names other than `ML-KEM` and `ML-DSA` are subject to change. `liboqs` makes available a [selection mechanism for algorithms on the NIST standards track, continued NIST competition, or purely experimental nature by way of the configuration variable OQS_ALGS_ENABLED](CONFIGURE.md#oQS_ALGS_ENABLED). By default `liboqs` is built supporting all, incl. experimental, PQ algorithms listed below.
-
-<!-- OQS_TEMPLATE_FRAGMENT_ALG_SUPPORT_START -->
-#### Key encapsulation mechanisms
-| Algorithm family   | Standardization status                                                                                                                                                                                                                    | Primary implementation                                                                                                                    |
-|:-------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------|
-| BIKE               | Not selected by [NIST](https://bikesuite.org/files/v5.1/BIKE_Spec.2022.10.10.1.pdf)                                                                                                                                                       | [`awslabs/bike-kem`](https://github.com/awslabs/bike-kem)                                                                                 |
-| Classic McEliece   | Under [ISO](https://classic.mceliece.org/iso.html) consideration                                                                                                                                                                          | [`PQClean/PQClean@1eacfda`](https://github.com/PQClean/PQClean/commit/1eacfdafc15ddc5d5759d0b85b4cef26627df181)                           |
-| FrodoKEM           | Under [ISO](https://frodokem.org/) consideration                                                                                                                                                                                          | [`microsoft/PQCrypto-LWEKE@a2f9dec`](https://github.com/microsoft/PQCrypto-LWEKE/commit/a2f9dec8917ccc3464b3378d46b140fa7353320d)         |
-| HQC                | Selected by [NIST](https://pqc-hqc.org/doc/hqc_specifications_2025_08_22.pdf) for upcoming standardization                                                                                                                                | [`PQClean/PQClean@1eacfda`](https://github.com/PQClean/PQClean/commit/1eacfdafc15ddc5d5759d0b85b4cef26627df181)                           |
-| Kyber              | Selected by [NIST](https://csrc.nist.gov/CSRC/media/Projects/post-quantum-cryptography/documents/round-3/submissions/Kyber-Round3.zip) as basis for ML-KEM (FIPS 203)                                                                     | [`pq-crystals/kyber@441c051`](https://github.com/pq-crystals/kyber/commit/441c0519a07e8b86c8d079954a6b10bd31d29efc)                       |
-| ML-KEM             | Standardized by [NIST](https://csrc.nist.gov/pubs/fips/203/final)                                                                                                                                                                         | [`pq-code-package/mlkem-native@d2cae2b`](https://github.com/pq-code-package/mlkem-native/commit/d2cae2be522a67bfae26100fdb520576f1b2ef90) |
-| NTRU               | Not selected by [NIST](https://csrc.nist.gov/CSRC/media/Projects/post-quantum-cryptography/documents/round-3/submissions/NTRU-Round3.zip), under standardization consideration by [NTT](https://info.isl.ntt.co.jp/crypt/ntru/index.html) | [`PQClean/PQClean@4c9e5a3`](https://github.com/PQClean/PQClean/commit/4c9e5a3aa715cc8d1d0e377e4e6e682ebd7602d6)                           |
-| NTRU-Prime         | Not selected by [NIST](https://csrc.nist.gov/CSRC/media/Projects/post-quantum-cryptography/documents/round-3/submissions/NTRU-Prime-Round3.zip)                                                                                           | [`openssh/openssh-portable`](https://github.com/openssh/openssh-portable/blob/1cc936b2fabffeac7fff14ca1070d7d7a317ab7b/sntrup761.c)       |
-
-#### Signature schemes
-| Algorithm family   | Standardization status                                                                                                                                               | Primary implementation                                                                                                                      |
-|:-------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------|
-| CROSS              | Under [NIST](https://www.cross-crypto.com/CROSS_Specification_v2.2.pdf) consideration                                                                                | [`CROSS-signature/CROSS-lib-oqs@a21ebc3`](https://github.com/CROSS-signature/CROSS-lib-oqs/commit/a21ebc314e06b0972a9bbcf2813a185ecb2917f1) |
-| Falcon             | Selected by [NIST](https://csrc.nist.gov/CSRC/media/Projects/post-quantum-cryptography/documents/round-3/submissions/Falcon-Round3.zip) for upcoming standardization | [`PQClean/PQClean@1eacfda`](https://github.com/PQClean/PQClean/commit/1eacfdafc15ddc5d5759d0b85b4cef26627df181)                             |
-| MAYO               | Under [NIST](https://csrc.nist.gov/csrc/media/Projects/pqc-dig-sig/documents/round-2/spec-files/mayo-spec-round2-web.pdf) consideration                              | [`PQCMayo/MAYO-C@64e15c6`](https://github.com/PQCMayo/MAYO-C/commit/64e15c622dec1f59aa5bbaf7f7c8f4f20af75106)                               |
-| ML-DSA             | Standardized by [NIST](https://csrc.nist.gov/pubs/fips/204/final)                                                                                                    | [`pq-code-package/mldsa-native@f48f164`](https://github.com/pq-code-package/mldsa-native/commit/f48f164cefb07f4ffa519ddda7cee670b8ee3517)   |
-| MQOM               | Under [NIST](https://csrc.nist.gov/csrc/media/Projects/pqc-dig-sig/documents/round-2/spec-files/mqom-spec-round2-web.pdf) consideration                              | [`mqom/mqom-v2@ec6b7fa`](https://github.com/mqom/mqom-v2/commit/ec6b7fa86e232a25f8b2f151a4b4eebb8e81b5e7)                                   |
-| SLH-DSA            | Standardized by [NIST](https://csrc.nist.gov/pubs/fips/205/final)                                                                                                    | [`pq-code-package/slhdsa-c@a0fc1ff`](https://github.com/pq-code-package/slhdsa-c/commit/a0fc1ff253930060d0246aebca06c2538eb92b88)           |
-| SNOVA              | Under [NIST](https://csrc.nist.gov/csrc/media/Projects/pqc-dig-sig/documents/round-2/spec-files/snova-spec-round2-web.pdf) consideration                             | [`vacuas/SNOVA@1c3ca6f`](https://github.com/vacuas/SNOVA/commit/1c3ca6f4f7286c0bde98d7d6f222cf63b9d52bff)                                   |
-| UOV                | Under [NIST](https://csrc.nist.gov/csrc/media/Projects/pqc-dig-sig/documents/round-2/spec-files/uov-spec-round2-web.pdf) consideration                               | [`pqov/pqov@33fa527`](https://github.com/pqov/pqov/commit/33fa5278754a32064c55901c3a17d48b06cc2351)                                         |
-
-#### Stateful signature schemes
-| Algorithm family   | Standardization status                                                                                                                                         | Primary implementation                                          |
-|:-------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------|
-| LMS                | Standardized by [IRTF](https://www.rfc-editor.org/info/rfc8554), approved by [NIST](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-208.pdf) | [`cisco/hash-sigs`](https://github.com/cisco/hash-sigs)         |
-| XMSS               | Standardized by [IRTF](https://www.rfc-editor.org/info/rfc8391), approved by [NIST](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-208.pdf) | [`XMSS/xmss-reference`](https://github.com/XMSS/xmss-reference) |
-<!-- OQS_TEMPLATE_FRAGMENT_ALG_SUPPORT_END -->
-
-### Limitations and Security
-
-While at the time of this writing there are no vulnerabilities known in any of the quantum-safe algorithms used in this library, caution is advised when deploying quantum-safe algorithms as most of the algorithms and software have not been subject to the same degree of scrutiny as for currently deployed algorithms. Particular attention should be paid to guidance provided by the standards community, especially from the NIST [Post-Quantum Cryptography Standardization](https://csrc.nist.gov/Projects/Post-Quantum-Cryptography/Post-Quantum-Cryptography-Standardization) project.  As research advances, the supported algorithms may see rapid changes in their security, and may even prove insecure against both classical and quantum computers. Moreover, note that the `sntrup761` is only included for interop testing.
-
-liboqs does not intend to "pick winners": algorithm support is informed by the NIST PQC standardization project. We strongly recommend that applications and protocols rely on the outcomes of this effort when deploying post-quantum cryptography.
-
-We realize some parties may want to deploy quantum-safe cryptography prior to the conclusion of the NIST PQC standardization project.  We strongly recommend such attempts make use of so-called **hybrid cryptography**, in which quantum-safe public-key algorithms are used alongside traditional public key algorithms (like RSA or elliptic curves) so that the solution is at least no less secure than existing traditional cryptography.
-
-**WE DO NOT CURRENTLY RECOMMEND RELYING ON THIS LIBRARY IN A PRODUCTION ENVIRONMENT OR TO PROTECT ANY SENSITIVE DATA.** This library is meant to help with research and prototyping.  While we make a best-effort approach to avoid security bugs, this library has not received the level of auditing and analysis that would be necessary to rely on it for high security use.
-
-Please see [SECURITY.md](SECURITY.md#security-policy) for details on how to report a vulnerability and the OQS vulnerability response process.
-
-#### Platform limitations
-
-In order to optimize support effort,
-- not all algorithms are equally well supported on all platforms. In case of questions, it is first advised to review the [documentation files for each algorithm](docs/algorithms).
-- not all compilers are equally well supported. For example, at least v7.1.0 of the GNU compiler is required.
-
-#### Support limitations
-
-This project is not commercially supported. All guidelines and goals for liboqs are reflections of current practices, executed by a community of academic, part-time, and/or voluntary contributors on a best-effort basis and may change at any time. Any entity seeking more reliable commitments is strongly encouraged to join the OQS community and thus enhance the code and support that the community can provide.
+## 기반 (Upstream)
+- **원본 프로젝트:** Open Quantu, Sate liboqs — <https://github.com/open-quantum-safe/liboqs>
+- **원본 라이선스:** MIT 2.0 License( [liboqs](https://github.com/open-quantum-safe/liboqs)는 해당 라이선스를 유지하지만 사용되는 일부 암호의 라이선스는 다를 수 있으니 해당 페이지를 통해 확인하세요.)
 
 
-## Quickstart
+## 빌드 & 설치
+### 1. 의존성 설치
 
-### Linux and Mac
+Ubuntu에서는 다음 명령어를 실행합니다.
 
-1. Install dependencies:
+```bash
+sudo apt install astyle cmake gcc ninja-build libssl-dev python3-pytest python3-pytest-xdist unzip xsltproc doxygen graphviz python3-yaml valgrind
+```
 
-	On Ubuntu:
+macOS에서는 원하는 패키지 관리자를 사용할 수 있으며, 아래는 Homebrew를 사용하는 예시입니다.
 
-		 sudo apt install astyle cmake gcc ninja-build libssl-dev python3-pytest python3-pytest-xdist unzip xsltproc doxygen graphviz python3-yaml valgrind
+```bash
+brew install cmake ninja openssl@3 wget doxygen graphviz astyle valgrind
+pip3 install pytest pytest-xdist pyyaml
+```
 
-	On macOS, using a package manager of your choice (we've picked Homebrew):
+Nix를 사용하는 경우 다음 명령어를 실행합니다.
 
-		brew install cmake ninja openssl@3 wget doxygen graphviz astyle valgrind
-		pip3 install pytest pytest-xdist pyyaml
+```bash
+nix develop
+```
 
-	Using Nix:
+liboqs에서 AES, SHA-2 등의 대칭키 암호 알고리즘 구현에 OpenSSL을 사용하려면 OpenSSL이 설치되어 있어야 합니다.
+OpenSSL 3.x 버전 사용을 권장하며, 지원이 종료된 1.1.1 버전도 사용할 수 있습니다.
 
-	    nix develop
 
-	Note that, if you want liboqs to use OpenSSL for various symmetric crypto algorithms (AES, SHA-2, etc.) then you must have OpenSSL installed (version 3.x recommended; EOL version 1.1.1 also still possible).
+### 2. 소스 코드 다운로드 및 빌드
 
-2. Get the source:
+다음 명령어를 사용하여 소스 코드를 가져옵니다.
 
-		git clone -b main https://github.com/open-quantum-safe/liboqs.git
-		cd liboqs
+```bash
+git clone -b main https://github.com/open-quantum-safe/liboqs.git
+cd liboqs
+```
 
-	and build:
+이후 다음과 같이 빌드합니다.
 
-		mkdir build && cd build
-		cmake -GNinja ..
-		ninja
+```bash
+mkdir build && cd build
+cmake -GNinja ..
+ninja
+```
 
-Various `cmake` build options to customize the resultant artifacts are available and are [documented in CONFIGURE.md](CONFIGURE.md#options-for-configuring-liboqs-builds). All supported options are also listed in the `.CMake/alg-support.cmake` file, and can be viewed by running `cmake -LAH -N ..` in the `build` directory.
+빌드 결과를 구성하기 위한 다양한 `cmake` 옵션을 사용할 수 있으며, 자세한 내용은 [`CONFIGURE.md`](CONFIGURE.md#options-for-configuring-liboqs-builds)를 참고하십시오.
 
-The following instructions assume we are in `build`.
+지원되는 모든 옵션은 `.CMake/alg-support.cmake` 파일에서도 확인할 수 있습니다.
 
-3. By default the main build result is `lib/liboqs.a`, a static library. If you want to build a shared/dynamic library, append [`-DBUILD_SHARED_LIBS=ON`](CONFIGURE.md#bUILD_SHARED_LIBS) to the `cmake -GNinja ..` command above and the result will be `lib/liboqs.so|dylib|dll`. The public headers are located in the `include` directory. There are also a variety of programs built under the `tests` directory:
+또한 `build` 디렉터리에서 다음 명령어를 실행하여 사용 가능한 CMake 옵션을 확인할 수 있습니다.
 
-	- `test_kem`: Simple test harness for key encapsulation mechanisms
-	- `test_sig`: Simple test harness for signature schemes
-	- `test_sig_stfl`: Simple test harness for stateful signature schemes
-	- `test_kem_mem`: Simple test harness for checking memory consumption of key encapsulation mechanisms
-	- `test_sig_mem`: Simple test harness for checking memory consumption of signature schemes
-	- `kat_kem`: Program that generates known answer test (KAT) values for key encapsulation mechanisms using the same procedure as the NIST submission requirements, for checking against submitted KAT values using `tests/test_kat.py`
-	- `kat_sig`: Program that generates known answer test (KAT) values for signature schemes using the same procedure as the NIST submission requirements, for checking against submitted KAT values using `tests/test_kat.py`
-	- `kat_sig_stfl`: Program for checking results against submitted KAT values using `tests/test_kat.py`
-	- `speed_kem`: Benchmarking program for key encapsulation mechanisms; see `./speed_kem --help` for usage instructions
-	- `speed_sig`: Benchmarking program for signature mechanisms; see `./speed_sig --help` for usage instructions
-	- `speed_sig_stfl`: Benchmarking program for stateful signature mechanisms; see `./speed_sig_stfl --help` for usage instructions
-	- `example_kem`: Minimal runnable example showing the usage of the KEM API
-	- `example_sig`: Minimal runnable example showing the usage of the signature API
-	- `example_sig_stfl`: Minimal runnable example showing the usage of the stateful signature API
-	- `test_aes`, `test_sha3`: Simple test harnesses for crypto sub-components
-	- `test_portability`: Simple test harnesses for checking cross-CPU code portability; requires presence of `qemu`; proper operation validated only on Ubuntu
+```bash
+cmake -LAH -N ..
+```
 
-	The complete test suite can be run using
+이후 설명에서는 현재 위치가 `build` 디렉터리라고 가정합니다.
 
-		ninja run_tests
 
-4. To generate HTML documentation of the API, run:
+### 3. 빌드 결과 및 테스트
 
-		ninja gen_docs
+기본적으로 생성되는 주요 빌드 결과는 다음 정적 라이브러리입니다.
 
-	Then open `docs/html/index.html` in your web browser.
+```text
+lib/liboqs.a
+```
 
-4. `ninja install` can be run to install the built library and `include` files to a location of choice, which can be specified by passing the `-DCMAKE_INSTALL_PREFIX=<dir>` option to `cmake` at configure time. Alternatively, `ninja package` can be run to create an install package.
+공유 라이브러리 또는 동적 라이브러리를 생성하려면 앞서 사용한 CMake 명령어에 다음 옵션을 추가합니다.
 
-5. `ninja uninstall` can be run to remove all installation files.
+```text
+-DBUILD_SHARED_LIBS=ON
+```
 
+예:
+
+```bash
+cmake -GNinja -DBUILD_SHARED_LIBS=ON ..
+```
+
+이 경우 플랫폼에 따라 다음과 같은 공유 라이브러리가 생성됩니다.
+
+```text
+lib/liboqs.so
+lib/liboqs.dylib
+lib/liboqs.dll
+```
+
+공개 헤더 파일은 `include` 디렉터리에 위치합니다.
+
+전체 테스트는 다음 명령어로 실행할 수 있습니다.
+
+```bash
+ninja run_tests
+```
+
+
+### 4. API 문서 생성
+
+API의 HTML 문서를 생성하려면 다음 명령어를 실행합니다.
+
+```bash
+ninja gen_docs
+```
+
+생성된 문서는 다음 파일을 웹 브라우저에서 열어 확인할 수 있습니다.
+
+```text
+docs/html/index.html
+```
+
+
+### 5. 설치
+
+빌드된 라이브러리와 `include` 파일을 시스템에 설치하려면 다음 명령어를 실행합니다.
+
+```bash
+ninja install
+```
+
+설치 위치를 지정하려면 CMake 설정 단계에서 다음 옵션을 사용할 수 있습니다.
+
+```text
+-DCMAKE_INSTALL_PREFIX=<dir>
+```
+
+예:
+
+```bash
+cmake -GNinja -DCMAKE_INSTALL_PREFIX=/usr/local ..
+```
+
+또는 다음 명령어를 사용하여 설치 패키지를 생성할 수 있습니다.
+
+```bash
+ninja package
+```
+
+### 6. 삭제
+
+설치된 파일을 제거하려면 다음 명령어를 실행합니다.
+
+```bash
+ninja uninstall
+```
 
 ### Windows
 
-Binaries can be generated using Visual Studio 2019 with the [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools) extension installed. The same options as explained above for Linux/macOS can be used and build artifacts are generated in the specified `build` folders.
+Windows에서는 [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools) 확장이 설치된 Visual Studio 2019를 사용하여 바이너리를 생성할 수 있습니다.
 
-If you want to create Visual Studio build files, e.g., if not using `ninja`, be sure to _not_ pass the parameter `-GNinja` to the `cmake` command as exemplified above. You can then build all components using `msbuild`, e.g. as follows: `msbuild ALL_BUILD.vcxproj` and install all artifacts e.g. using this command `msbuild INSTALL.vcxproj`.
+Linux 및 macOS에서 사용하는 것과 동일한 CMake 옵션을 사용할 수 있으며, 빌드 결과는 지정한 `build` 디렉터리에 생성됩니다.
 
+Ninja를 사용하지 않고 Visual Studio용 빌드 파일을 생성하려면 CMake 명령어에서 `-GNinja` 옵션을 사용하지 않아야 합니다.
 
-### Cross compilation
+이후 `msbuild`를 사용하여 전체 프로젝트를 빌드할 수 있습니다.
 
-You can cross compile liboqs for various platforms. Detailed information is available [in the Wiki](https://github.com/open-quantum-safe/liboqs/wiki/Platform-specific-notes-for-building-liboqs#cross-compiling).
+```bash
+msbuild ALL_BUILD.vcxproj
+```
 
-## Documentation
+설치하려면 다음 명령어를 사용할 수 있습니다.
 
-More detailed information on building, optional build parameters, example applications, coding conventions and more can be found in the [wiki](https://github.com/open-quantum-safe/liboqs/wiki).
+```bash
+msbuild INSTALL.vcxproj
+```
 
-## Contributing
+---
 
-Contributions that meet the acceptance criteria are gratefully welcomed. See our [Contributing Guide](https://github.com/open-quantum-safe/liboqs/wiki/Contributing-Guide) for more details.
+### Cross Compilation
 
-## License
+liboqs는 다양한 플랫폼을 대상으로 Cross Compilation을 지원합니다.
 
-liboqs is licensed under the MIT License; see [LICENSE.txt](https://github.com/open-quantum-safe/liboqs/blob/main/LICENSE.txt) for details.
+자세한 내용은 [liboqs Wiki의 플랫폼별 빌드 및 Cross Compilation 문서](https://github.com/open-quantum-safe/liboqs/wiki/Platform-specific-notes-for-building-liboqs#cross-compiling)를 참고하십시오.
 
-liboqs includes some third party libraries or modules that are licensed differently; the corresponding subfolder contains the license that applies in that case.  In particular:
+## 라이선스
+본 프로젝트는 원본 liboqs의 라이선스 정책을 따릅니다.
 
-- `.CMake/CMakeDependentOption.cmake`: BSD 3-Clause License
-- `src/common/common.c`: includes portions which are Apache License v2.0
-- `src/common/crypto/aes/aes_c.c`: public domain or any OSI-approved license
-- `src/common/crypto/aes/aes*_ni.c`: public domain
-- `src/common/crypto/sha2/sha2_c.c`: public domain
-- `src/common/crypto/sha3/xkcp_low` : CC0 (public domain), except `brg_endian.h` and `KeccakP-1600-AVX2.s`
-- `src/common/crypto/sha3/xkcp_low/.../brg_endian.h` : BSD 3-Clause License
-- `src/common/crypto/sha3/xkcp_low/.../KeccakP-1600-AVX2.s` : BSD-like [CRYPTOGAMS license](http://www.openssl.org/~appro/cryptogams/)
-- `src/common/rand/rand_nist.c`: See file
-- `src/kem/bike/additional`: Apache License v2.0
-- `src/kem/classic_mceliece/pqclean_*`: public domain
-- `src/kem/kyber/pqcrystals-*`: public domain (CC0) or Apache License v2.0
-- `src/kem/kyber/pqclean_*`: public domain (CC0), and public domain (CC0) or Apache License v2.0, and public domain (CC0) or MIT, and MIT
-- `src/kem/kyber/libjade_*` public domain (CC0) or Apache License v2.
-- `src/kem/ml_kem/mlkem-native_*`: MIT or Apache License v2.0 or ISC License
-- `src/kem/ntru/pqclean_*`: public domain (CC0)
-- `src/kem/ntruprime/sntrup761_openssh`: public domain
--  src/sig/falcon/pqclean_\*\_aarch64 : Apache License v2.0
-- `src/sig/mayo/*`: Apache License v2.0
-- `src/sig/ml_dsa/pqcrystals-*`: public domain (CC0) or Apache License v2.0
+원본 liboqs는 MIT License로 배포됩니다.
 
-## Acknowledgements
+- 원본 프로젝트의 저작권 표시 및 라이선스를 유지합니다.
+- 외부에서 가져온 개별 알고리즘 구현은 해당 구현의 라이선스 조건을 따를 수 있습니다.
+- 자세한 내용은 레포 내 LICENSE, LICENSE.txt 및 각 소스 파일의 라이선스 헤더를 참조하십시오.
 
-The OQS project is supported by the [Post-Quantum Cryptography Alliance](https://pqca.org/) as part of the [Linux Foundation](https://linuxfoundation.org/).
+## 보안
+보안 취약점은 **공개 이슈로 등록하지 마십시오.**
+취약점 제보 절차와 정책은 [`SECURITY.md`](./SECURITY.md)를 참조하십시오.
 
-The OQS project was founded by Douglas Stebila and Michele Mosca at the University of Waterloo.  [Contributors to liboqs](https://github.com/open-quantum-safe/liboqs/blob/main/CONTRIBUTORS) include individual contributors, academics and researchers, and various companies, including Amazon Web Services, Cisco Systems, evolutionQ, IBM Research, Microsoft Research, SandboxAQ, and softwareQ.
+- 제보 메일 : `wwsddrf15102@gmail.com`
 
-Financial support for the development of Open Quantum Safe has been provided by Amazon Web Services, the Canadian Centre for Cyber Security, Cisco, the Unitary Fund, the NGI Assure Fund, and VeriSign Inc.
+## 기여
 
-Research projects which developed specific components of OQS have been supported by various research grants, including funding from the Natural Sciences and Engineering Research Council of Canada (NSERC); see the source papers for funding acknowledgments.
+기여를 환영합니다. 기여 범위 구분, 워크플로우, 커밋 규칙은
+[`CONTRIBUTING.md`](./CONTRIBUTING.md)를 참조하십시오.
+
+- 방식: **Fork & Pull Request**
+- 모든 커밋에 **`Signed-off-by`** 서명 필요 (DCO)
+- 성능 최적화 PR에는 가능한 한 Benchmark 결과를 포함해 주십시오
+- 일반적인 liboqs 자체의 버그 또는 범용 개선 사항은 원본 프로젝트[liboqs](https://github.com/open-quantum-safe/liboqs)에 제보해 주십시오.
