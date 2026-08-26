@@ -27,7 +27,7 @@ liboqs-80211은 80211-PQC 프로젝트에서 사용하는 암호 연산들을 �
 ## 상태
 > ⚠️ **실험 / 연구용 (Experimental)**
 > 본 프로젝트는 양자내성암호 구현 및 최적화를 목적으로 합니다.
-> 일부 알고리즘과 최적화 구현은 충분한 보안 검증이 완료되지 않았을 수 있으므로 실제 제품 환경에서는 사용하지 마십시오.
+> 일부 알고리즘과 최적화 구현은 충분한 보안 검증이 완료되지 않았을 수 있으므로 실제 제품 환경에서는 사용하지 마세요.
 > API, 지원 알고리즘 및 구현 구조는 개발 과정에서 변경될 수 있습니다.
 
 ## 주요 개발 범위
@@ -47,7 +47,7 @@ liboqs-80211은 80211-PQC 프로젝트에서 사용하는 암호 연산들을 �
 최적화 구현은 기존 참조 구현과 동일한 암호학적 결과를 생성해야 합니다.
 
 ## 기반 (Upstream)
-- **원본 프로젝트:** Open Quantu, Sate liboqs — <https://github.com/open-quantum-safe/liboqs>
+- **원본 프로젝트:** Open Quantum Safe-liboqs — <https://github.com/open-quantum-safe/liboqs>
 - **원본 라이선스:** MIT 2.0 License( [liboqs](https://github.com/open-quantum-safe/liboqs)는 해당 라이선스를 유지하지만 사용되는 일부 암호의 라이선스는 다를 수 있으니 해당 페이지를 통해 확인하세요.)
 
 
@@ -219,7 +219,7 @@ msbuild INSTALL.vcxproj
 
 liboqs는 다양한 플랫폼을 대상으로 Cross Compilation을 지원합니다.
 
-자세한 내용은 [liboqs Wiki의 플랫폼별 빌드 및 Cross Compilation 문서](https://github.com/open-quantum-safe/liboqs/wiki/Platform-specific-notes-for-building-liboqs#cross-compiling)를 참고하십시오.
+자세한 내용은 [liboqs Wiki의 플랫폼별 빌드 및 Cross Compilation 문서](https://github.com/open-quantum-safe/liboqs/wiki/Platform-specific-notes-for-building-liboqs#cross-compiling)를 참고하세요.
 
 ## 라이선스
 본 프로젝트는 원본 liboqs의 라이선스 정책을 따릅니다.
@@ -228,20 +228,20 @@ liboqs는 다양한 플랫폼을 대상으로 Cross Compilation을 지원합니�
 
 - 원본 프로젝트의 저작권 표시 및 라이선스를 유지합니다.
 - 외부에서 가져온 개별 알고리즘 구현은 해당 구현의 라이선스 조건을 따를 수 있습니다.
-- 자세한 내용은 레포 내 LICENSE, LICENSE.txt 및 각 소스 파일의 라이선스 헤더를 참조하십시오.
+- 자세한 내용은 레포 내 LICENSE, LICENSE.txt 및 각 소스 파일의 라이선스 헤더를 참조하세요.
 
 ## 보안
-보안 취약점은 **공개 이슈로 등록하지 마십시오.**
-취약점 제보 절차와 정책은 [`SECURITY.md`](./SECURITY.md)를 참조하십시오.
+보안 취약점은 공개 이슈로 등록하지 마세요.
+취약점 제보 절차와 정책은 [`SECURITY.md`](./SECURITY.md)를 참조하세요.
 
 - 제보 메일 : `wwsddrf15102@gmail.com`
 
 ## 기여
 
-기여를 환영합니다. 기여 범위 구분, 워크플로우, 커밋 규칙은
-[`CONTRIBUTING.md`](./CONTRIBUTING.md)를 참조하십시오.
+기여를 환영합니다. 
+기여 범위 구분, 워크플로우, 커밋 규칙은 [`CONTRIBUTING.md`](./CONTRIBUTING.md)를 참조하세요.
 
 - 방식: **Fork & Pull Request**
 - 모든 커밋에 **`Signed-off-by`** 서명 필요 (DCO)
-- 성능 최적화 PR에는 가능한 한 Benchmark 결과를 포함해 주십시오
-- 일반적인 liboqs 자체의 버그 또는 범용 개선 사항은 원본 프로젝트[liboqs](https://github.com/open-quantum-safe/liboqs)에 제보해 주십시오.
+- 성능 최적화 PR에는 가능한 한 Benchmark 결과를 포함해 주세요.
+- 일반적인 liboqs 자체의 버그 또는 범용 개선 사항은 원본 프로젝트[liboqs](https://github.com/open-quantum-safe/liboqs)에 제보해 주세요.
