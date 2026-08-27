@@ -9,19 +9,6 @@
 > ℹ️ `liboqs-80211`은 Open Quantum Safe의 [liboqs](https://github.com/open-quantum-safe/liboqs)를 기반으로 합니다.  
 > 일반적인 liboqs 자체의 버그 또는 범용 개선 사항은 가능하면 원본 liboqs 프로젝트에 제출해 주세요.
 
-## 목차
-
-- [기여 범위](#기여-범위)
-- [기여 유형](#기여-유형)
-- [개발 환경 및 빌드](#개발-환경-및-빌드)
-- [기여 절차](#기여-절차)
-- [커밋 규칙](#커밋-규칙)
-- [암호 구현 및 최적화 원칙](#암호-구현-및-최적화-원칙)
-- [코드 스타일](#코드-스타일)
-- [Pull Request 체크리스트](#pull-request-체크리스트)
-- [리뷰 및 병합](#리뷰-및-병합)
-- [라이선스 및 DCO](#라이선스-및-dco)
-
 ## 기여 범위
 
 `liboqs-80211`은 80211-PQC 프로젝트에서 사용하는 PQC 및 암호 연산을 제공하고, 이를 무선 공유기와 임베디드 환경에 적합하도록 최적화하는 레포입니다.
@@ -58,46 +45,6 @@
 > ⚠️ **보안 취약점은 공개 Issue로 등록하지 마십시오.**  
 > 암호 구현 또는 최적화 과정에서 발견된 취약점은 비공개로 제보해야 합니다.  
 > 자세한 절차는 [`SECURITY.md`](./SECURITY.md)를 참고해 주세요.
-
-## 개발 환경 및 빌드
-
-기본적인 빌드 방법은 [`README.md`](./README.md)의 **빌드 & 설치** 섹션을 참고해 주세요.
-
-Ubuntu에서는 일반적으로 다음과 같은 의존성이 필요합니다.
-
-```bash
-sudo apt install astyle cmake gcc ninja-build libssl-dev \
-python3-pytest python3-pytest-xdist unzip xsltproc \
-doxygen graphviz python3-yaml valgrind
-```
-
-소스 코드를 빌드하려면 다음과 같이 실행합니다.
-
-```bash
-mkdir build
-cd build
-
-cmake -GNinja ..
-ninja
-```
-
-변경 사항을 제출하기 전에 최소한 다음을 확인해 주세요.
-
-```bash
-ninja run_tests
-```
-
-암호 연산 또는 최적화를 수정한 경우에는 가능한 한 다음 항목도 함께 검증해 주세요.
-
-- Key Generation 정상 동작
-- Encapsulation 정상 동작
-- Decapsulation 정상 동작
-- Encapsulation과 Decapsulation의 Shared Secret 일치
-- 기존 테스트의 regression 없음
-- 대상 architecture에서 정상 빌드
-- 가능한 경우 실제 공유기 또는 임베디드 장치에서 정상 동작
-
-OpenWrt 환경에서 사용하는 변경이라면 `openwrt-pqc` 빌드 과정에서도 정상적으로 컴파일되는지 확인하는 것을 권장합니다.
 
 ## 기여 절차
 
@@ -137,13 +84,9 @@ docs/update-build-guide
 git commit -s -m "커밋 메시지"
 ```
 
-이 서명은 [Developer Certificate of Origin](https://developercertificate.org/)에 동의함을 의미합니다.
-
-즉, 기여자는 제출하는 코드를 해당 라이선스로 기여할 권리가 있음을 확인합니다.
-
 ### 커밋 메시지
 
-제목은 간결하게 작성하고, 본문에는 **무엇을 왜 변경했는지** 설명해 주세요.
+제목은 간결하게 작성하고, 본문에는 무엇을 왜 변경했는지 설명해 주세요.
 
 예:
 
@@ -169,25 +112,7 @@ docs: update ARM build instructions
 
 ## 암호 구현 및 최적화 원칙
 
-암호 연산의 경우 **성능보다 정확성과 보안이 우선합니다.**
-
-### 기존 구현과 동일한 동작 유지
-
-최적화 구현은 기존 reference implementation과 동일한 암호학적 결과를 생성해야 합니다.
-
-최소한 다음 흐름이 정상적으로 동작해야 합니다.
-
-```text
-Key Generation
-      ↓
-Encapsulation
-      ↓
-Decapsulation
-      ↓
-Shared Secret Comparison
-```
-
-Encapsulation과 Decapsulation을 통해 생성된 Shared Secret은 동일해야 합니다.
+암호 연산의 경우 성능보다 정확성과 보안이 우선합니다.
 
 ### 암호 파라미터 임의 변경 금지
 
@@ -279,25 +204,9 @@ Binary Size:
 
 ## 새로운 암호 알고리즘 추가
 
-새로운 암호 알고리즘을 추가할 경우 가능한 한 **원본 liboqs의 API 및 구조를 따릅니다.**
+새로운 암호 알고리즘을 추가할 경우 가능한 한 원본 liboqs의 API 및 구조를 따릅니다.
 
 본 프로젝트에서 독립적인 암호 API를 새로 정의하거나 기존 liboqs 구조와 호환되지 않는 형태로 구현하는 것은 지양합니다.
-
-가능하면 다음 구조를 유지해 주세요.
-
-```text
-80211-PQC
-    |
-    v
-liboqs API
-    |
-    v
-Cryptographic Implementation
-```
-
-새로운 알고리즘이 이미 원본 liboqs에서 지원되는 경우 해당 구현 및 API를 기반으로 적용하는 것을 우선합니다.
-
-범용적인 신규 알고리즘 추가 또는 liboqs 자체에 적용 가능한 변경은 원본 liboqs 프로젝트에 먼저 기여하는 것을 권장합니다.
 
 ## 코드 스타일
 
@@ -306,12 +215,9 @@ Cryptographic Implementation
 특히 다음 사항을 지켜 주세요.
 
 - 주변 코드와 스타일을 일관되게 유지
-- 불필요한 포매팅 변경 지양
 - 기존 liboqs API 구조 유지
-- 불필요한 dynamic allocation 지양
 - architecture-specific 코드에는 대상 환경 명시
 - 최적화 코드에는 필요한 경우 구현 의도 설명
-- compiler warning이 발생하지 않도록 확인
 - 원본 저작권 및 라이선스 헤더 유지
 
 새 파일을 추가할 때는 해당 코드의 라이선스에 맞는 SPDX header를 포함해야 합니다.
@@ -359,13 +265,5 @@ PR을 생성하기 전에 아래 항목을 확인해 주세요.
 `liboqs-80211`은 원본 liboqs의 라이선스 정책을 따릅니다.
 
 원본 liboqs는 **MIT License**로 배포되지만, 포함된 개별 암호 알고리즘 구현은 서로 다른 라이선스를 사용할 수 있습니다.
-
-따라서 다음 사항을 반드시 지켜 주세요.
-
-- 기존 copyright 표시를 삭제하지 마세요.
-- 기존 license header를 삭제하지 마세요.
-- SPDX identifier를 유지하세요.
-- 외부 코드를 가져온 경우 원본 출처와 라이선스를 확인하세요.
-- 새 코드의 라이선스가 해당 소스 트리의 기존 라이선스와 호환되는지 확인하세요.
 
 모든 커밋에는 `Signed-off-by`를 포함해야 하며, 이를 통해 기여자는 [DCO](https://developercertificate.org/)에 동의하는 것으로 간주됩니다.
