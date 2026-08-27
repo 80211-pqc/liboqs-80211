@@ -34,7 +34,6 @@
 - **암호 연산 최적화** — ML-KEM/Kyber, NTT/INTT, modular reduction, polynomial 연산 등
 - **아키텍처 최적화** — ARM, ARMv8-A, NEON 등 특정 CPU 및 명령어 집합을 활용한 최적화
 - **메모리 최적화** — stack, heap, temporary buffer 사용량 감소
-- **성능 개선** — KeyGen, Encapsulation, Decapsulation 실행 시간 및 CPU cycle 감소
 - **임베디드 최적화** — 제한된 CPU·메모리 환경을 고려한 구현 개선
 - **새로운 암호 구현 연동** — liboqs의 구조와 API를 유지하는 범위에서 필요한 PQC 알고리즘 연동
 - **버그 수정** — 암호 연산 오류, 빌드 실패, 플랫폼 호환성 문제
@@ -66,7 +65,6 @@ feat/ml-kem-support
 opt/neon-ntt
 opt/reduce-stack
 fix/decapsulation-error
-test/ml-kem-benchmark
 docs/update-build-guide
 ```
 
