@@ -34,11 +34,8 @@
 - **암호 연산 최적화** — ML-KEM/Kyber, NTT/INTT, modular reduction, polynomial 연산 등
 - **아키텍처 최적화** — ARM, ARMv8-A, NEON 등 특정 CPU 및 명령어 집합을 활용한 최적화
 - **메모리 최적화** — stack, heap, temporary buffer 사용량 감소
-- **임베디드 최적화** — 제한된 CPU·메모리 환경을 고려한 구현 개선
 - **새로운 암호 구현 연동** — liboqs의 구조와 API를 유지하는 범위에서 필요한 PQC 알고리즘 연동
 - **버그 수정** — 암호 연산 오류, 빌드 실패, 플랫폼 호환성 문제
-- **테스트 및 Benchmark 개선** — correctness test, benchmark, memory 측정 등
-- **문서 개선** — README, CONTRIBUTING, 빌드 문서, 코드 주석 등
 - **보안 취약점 제보** — 아래 주의사항 참고
 
 > ⚠️ **보안 취약점은 공개 Issue로 등록하지 마십시오.**  
@@ -114,28 +111,13 @@ docs: update ARM build instructions
 
 ### 암호 파라미터 임의 변경 금지
 
-성능 향상을 목적으로 다음과 같은 암호 파라미터를 임의로 변경하지 마세요.
-
-- polynomial degree
-- modulus
-- noise distribution
-- compression parameter
-- public key size
-- secret key size
-- ciphertext size
+성능 향상을 목적으로 암호 파라미터를 임의로 변경하지 마세요.
 
 실험적인 파라미터 변경이 필요한 경우 반드시 Issue에서 먼저 논의하고, 기존 구현과 명확히 분리해야 합니다.
 
 ### Constant-Time 특성 유지
 
-암호 구현을 최적화할 때 다음과 같은 보안 문제가 발생하지 않도록 주의해 주세요.
-
-- secret-dependent branch
-- secret-dependent memory access
-- timing side channel
-- secret key leakage
-- randomness 품질 저하
-- 비정상적인 ciphertext 처리
+암호 구현을 최적화할 때 다음과 같은 보안 문제가 발생하지 않도록 주의하세요.
 
 암호 구현의 보안 특성을 훼손하는 성능 최적화는 병합되지 않습니다.
 
