@@ -228,16 +228,14 @@ PR을 생성하기 전에 아래 항목을 확인해 주세요.
 
 - [ ] 프로젝트가 정상적으로 빌드됨
 - [ ] `ninja run_tests`가 통과함
-- [ ] KeyGen / Encapsulation / Decapsulation이 정상 동작함
-- [ ] Shared Secret이 정상적으로 일치함
+- [ ] 연산 결과가 정상적으로 일치함
 - [ ] 기존 기능에 regression이 없음
 - [ ] 모든 커밋에 `Signed-off-by`가 포함됨
 - [ ] 기존 저작권 및 라이선스 정보가 유지됨
 - [ ] 새 파일에 적절한 SPDX header가 포함됨
 - [ ] architecture-specific 변경의 대상 환경을 명시함
 - [ ] 성능 최적화 PR에는 가능한 한 benchmark 결과를 포함함
-- [ ] 필요한 경우 관련 문서를 업데이트함
-- [ ] OpenWrt 관련 변경인 경우 가능한 한 `openwrt-pqc` 빌드에서 검증함
+
 
 ## 리뷰 및 병합
 
