@@ -105,10 +105,12 @@ endif()
 add_executable(speed_kem speed_kem.c)
 target_link_libraries(speed_kem PRIVATE ${TEST_DEPS})
 
-add_executable(speed_kyber768_impls speed_kyber768_impls.c)
-target_link_libraries(speed_kyber768_impls PRIVATE ${TEST_DEPS})
-
-set(KEM_TESTS example_kem kat_kem test_kem test_kem_mem speed_kem speed_kyber768_impls vectors_kem)
+set(KEM_TESTS example_kem kat_kem test_kem test_kem_mem speed_kem vectors_kem)
+if(OQS_ENABLE_KEM_kyber_768 AND OQS_ENABLE_KEM_kyber_768_matacc)
+    add_executable(speed_kyber768_impls speed_kyber768_impls.c)
+    target_link_libraries(speed_kyber768_impls PRIVATE ${TEST_DEPS})
+    list(APPEND KEM_TESTS speed_kyber768_impls)
+endif()
 
 # SIG API tests
 add_executable(example_sig example_sig.c)

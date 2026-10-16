@@ -125,3 +125,4 @@ jobs:
           summary-always: true
           alert-threshold: 105%
           comment-always: false
+          skip-fetch-gh-pages: true
